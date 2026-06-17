@@ -1,0 +1,78 @@
+=====================================================
+  SAANIDHYAM PROJECT - SETUP NOTES
+  Date: 2026-04-30
+=====================================================
+
+PROJECT OVERVIEW:
+- Backend: Django REST Framework (Python 3.11) - "satoru_backend"
+- Frontend: Vite + React + Tailwind CSS v3
+- Database: PostgreSQL (NeonDB - cloud hosted)
+
+=====================================================
+STEPS DONE TO MAKE THE PROJECT RUN
+=====================================================
+
+--- BACKEND (saanidhyambackend) ---
+
+1. Created Python virtual environment:
+   Command: python -m venv venv
+   Location: saanidhyambackend\venv\
+
+2. Upgraded pip:
+   Command: venv\Scripts\python.exe -m pip install --upgrade pip
+
+3. Installed all Python dependencies from requirements.txt:
+   Command: venv\Scripts\pip.exe install -r requirements.txt
+   This installs: Django 5.0, DRF, SimpleJWT, psycopg2, celery, 
+   razorpay, google-generativeai, pandas, reportlab, etc.
+
+4. Ran database migrations (connects to NeonDB via .env):
+   Command: venv\Scripts\python.exe manage.py migrate
+   Result: All migrations already applied (DB was up to date)
+
+5. Collected static files:
+   Command: venv\Scripts\python.exe manage.py collectstatic --noinput
+   Result: 161 static files copied to staticfiles/
+
+6. Started Django development server:
+   Command: venv\Scripts\python.exe manage.py runserver 0.0.0.0:8000
+   URL: http://localhost:8000/
+   API: http://localhost:8000/api/
+
+--- FRONTEND (saanidhyamfrontend) ---
+
+7. Installed all Node.js dependencies:
+   Command: npm install
+   Result: 301 packages installed
+
+8. Started Vite development server:
+   Command: npm run dev
+   URL: http://localhost:5173/
+
+=====================================================
+HOW TO RUN THE PROJECT (FUTURE REFERENCE)
+=====================================================
+
+Step 1: Start Backend
+  Open a terminal in saanidhyambackend\ and run:
+    venv\Scripts\activate
+    python manage.py runserver
+  (Server runs at http://localhost:8000)
+
+Step 2: Start Frontend
+  Open another terminal in saanidhyamfrontend\ and run:
+    npm run dev
+  (Server runs at http://localhost:5173)
+
+Step 3: Open browser at http://localhost:5173
+
+=====================================================
+NOTES / WARNINGS
+=====================================================
+- The backend .env file has NeonDB credentials (cloud PostgreSQL).
+  Make sure you have internet connectivity for the DB to work.
+- There's a harmless RequestsDependencyWarning about urllib3/chardet
+  version mismatch - does not affect functionality.
+- Celery/Redis is configured but optional for development.
+  Background tasks won't run without Redis, but the app works fine.
+- Frontend connects to backend at http://localhost:8000 (set in .env VITE_API_URL).

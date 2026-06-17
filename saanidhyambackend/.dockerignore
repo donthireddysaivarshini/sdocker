@@ -1,0 +1,47 @@
+# Virtual environments
+venv/
+.venv/
+
+# Git
+.git/
+.gitignore
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Environment files (provided at runtime)
+.env
+.env.local
+
+# IDE/Editor
+.vscode/
+.idea/
+*.sw?
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Testing
+.coverage
+htmlcov/
+*.log
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Misc
+notes.txt
+note.txt
+test_db.py
+README.md
+package-lock.json

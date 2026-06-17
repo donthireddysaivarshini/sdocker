@@ -1,0 +1,38 @@
+# Dependencies (reinstalled during build)
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+
+# Git
+.git/
+.gitignore
+
+# Environment files (provided at build time via --build-arg)
+.env
+.env.local
+*.local
+
+# IDE/Editor
+.vscode/
+.idea/
+*.sw?
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Logs
+*.log
+npm-debug.log*
+
+# Misc
+notes.txt
+nul-safe
+README.md

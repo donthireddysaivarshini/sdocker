@@ -1,0 +1,373 @@
+=====================================================================
+  SAANIDHYAM PROJECT - DOCKER SETUP GUIDE
+  Last Updated: 2026-06-17
+=====================================================================
+
+TABLE OF CONTENTS:
+  1. Prerequisites
+  2. Project Structure (Docker Files)
+  3. Setting Up Environment Variables
+  4. Building & Running with Docker
+  5. Merging Your Existing Local Changes with This Docker Version
+  6. Common Docker Commands (Day-to-Day Usage)
+  7. Troubleshooting
+  8. Switching Between Docker and Local Development
+
+=====================================================================
+1. PREREQUISITES
+=====================================================================
+
+You MUST have the following installed on your machine:
+
+  a) Docker Desktop
+     - Windows: https://docs.docker.com/desktop/install/windows-install/
+     - Mac:     https://docs.docker.com/desktop/install/mac-install/
+     - Linux:   https://docs.docker.com/engine/install/
+
+  b) Docker Compose (included with Docker Desktop on Windows/Mac)
+     - Verify: Open a terminal and run:
+         docker --version
+         docker compose version
+     - Both commands should print version info without errors.
+
+  c) Git (if you are pulling from a repository)
+     - Verify: git --version
+
+  IMPORTANT (Windows Users):
+     - Make sure Docker Desktop is RUNNING (check the system tray icon).
+     - If using WSL2 backend, ensure WSL2 is enabled in Docker Desktop settings.
+
+
+=====================================================================
+2. PROJECT STRUCTURE (DOCKER FILES)
+=====================================================================
+
+After setup, your project folder should look like this:
+
+  saanidhyam(30-04-26)/
+  ├── docker-compose.yml          <-- Orchestrates both containers
+  ├── howtorundocker.txt          <-- This file
+  ├── note.txt                    <-- Original setup notes
+  │
+  ├── saanidhyambackend/
+  │   ├── Dockerfile              <-- Backend container definition
+  │   ├── .dockerignore           <-- Files excluded from Docker build
+  │   ├── .env                    <-- YOUR backend env vars (NOT committed to git)
+  │   ├── .env.example            <-- Template for .env
+  │   ├── requirements.txt        <-- Python dependencies
+  │   ├── manage.py
+  │   ├── gunicorn_config.py
+  │   ├── satoru_backend/         <-- Django project settings
+  │   ├── homes/                  <-- Django app
+  │   ├── ticketing/              <-- Django app
+  │   └── ...
+  │
+  └── saanidhyamfrontend/
+      ├── Dockerfile              <-- Frontend container definition
+      ├── .dockerignore           <-- Files excluded from Docker build
+      ├── nginx.conf              <-- Nginx config for serving the React SPA
+      ├── .env                    <-- Frontend env vars (only used for local dev)
+      ├── .env.example            <-- Template for .env
+      ├── package.json
+      ├── src/                    <-- React source code
+      └── ...
+
+
+=====================================================================
+3. SETTING UP ENVIRONMENT VARIABLES
+=====================================================================
+
+  --- BACKEND (.env) ---
+
+  The backend REQUIRES a .env file at: saanidhyambackend/.env
+  If you already have one from local development, it will work as-is.
+
+  If you DON'T have one, copy the example and fill it in:
+
+    Copy saanidhyambackend/.env.example to saanidhyambackend/.env
+    Then edit .env and fill in your actual values:
+
+      SECRET_KEY=your-actual-django-secret-key
+      DEBUG=True
+      ALLOWED_HOSTS=localhost,127.0.0.1,*
+      PGDATABASE=neondb
+      PGUSER=your_neondb_user
+      PGPASSWORD=your_neondb_password
+      PGHOST=ep-xxxxx.aws.neon.tech
+      PGPORT=5432
+      CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
+      RAZORPAY_KEY_ID=your_razorpay_key
+      RAZORPAY_KEY_SECRET=your_razorpay_secret
+      RAZORPAY_WEBHOOK_SECRET=your_webhook_secret
+
+  IMPORTANT: The .env file contains secrets. NEVER commit it to git.
+
+  --- FRONTEND ---
+
+  The frontend API URL is set at BUILD TIME via docker-compose.yml.
+  By default it points to http://localhost:8000 (the backend container).
+  You do NOT need to create a frontend .env for Docker usage.
+  To change it, edit the VITE_API_URL build arg in docker-compose.yml.
+
+
+=====================================================================
+4. BUILDING & RUNNING WITH DOCKER
+=====================================================================
+
+  Open a terminal/PowerShell in the project ROOT folder:
+    cd "path\to\saanidhyam(30-04-26)"
+
+  --- FIRST TIME (or after code changes): Build and start ---
+
+    docker compose up --build
+
+    This will:
+      1. Build the backend image (installs Python deps, collects static files)
+      2. Build the frontend image (installs Node deps, builds React, sets up Nginx)
+      3. Run database migrations automatically
+      4. Start both containers
+
+    Wait for the output to show:
+      - Backend logs: "Listening at: http://0.0.0.0:8000"
+      - Frontend is ready when nginx starts
+
+  --- ACCESS THE APP ---
+
+    Frontend (React UI):  http://localhost:3000
+    Backend (Django API):  http://localhost:8000
+    Django Admin:          http://localhost:8000/admin/
+
+  --- STOP THE APP ---
+
+    Press Ctrl+C in the terminal where docker compose is running
+    OR open another terminal and run:
+      docker compose down
+
+  --- RUN IN BACKGROUND (detached mode) ---
+
+    docker compose up --build -d
+
+    To view logs while running in background:
+      docker compose logs -f
+      docker compose logs -f backend     (backend only)
+      docker compose logs -f frontend    (frontend only)
+
+
+=====================================================================
+5. MERGING YOUR EXISTING LOCAL CHANGES WITH THIS DOCKER VERSION
+=====================================================================
+
+  If you already have local changes (code edits, new features, etc.)
+  and you are receiving this Docker version from a teammate, here is
+  how to combine everything:
+
+  --- SCENARIO A: You are using Git ---
+
+    1. SAVE your current work:
+         git add .
+         git commit -m "Save my local changes before merging Docker setup"
+
+    2. PULL the Docker version (from the branch/remote that has it):
+         git pull origin <branch-name>
+       OR if it's a different branch:
+         git fetch origin
+         git merge origin/<branch-with-docker-files>
+
+    3. RESOLVE any merge conflicts if they appear.
+       The Docker files (Dockerfile, docker-compose.yml, nginx.conf,
+       .dockerignore) are NEW files so they should NOT conflict with
+       your existing code.
+
+    4. Make sure your .env file is still intact:
+         - Check saanidhyambackend/.env still has your credentials
+         - If it was deleted during merge, recreate it from .env.example
+
+    5. BUILD & RUN:
+         docker compose up --build
+
+  --- SCENARIO B: You are NOT using Git (manual file copy) ---
+
+    1. BACKUP your current project folder (just in case):
+         Copy the entire "saanidhyam(30-04-26)" folder somewhere safe
+
+    2. COPY these new Docker files INTO your existing project:
+       From the Docker version, copy these files to your project:
+
+         ROOT LEVEL:
+           docker-compose.yml  -->  saanidhyam(30-04-26)/docker-compose.yml
+
+         BACKEND (saanidhyambackend/):
+           Dockerfile          -->  saanidhyambackend/Dockerfile
+           .dockerignore       -->  saanidhyambackend/.dockerignore
+
+         FRONTEND (saanidhyamfrontend/):
+           Dockerfile          -->  saanidhyamfrontend/Dockerfile
+           .dockerignore       -->  saanidhyamfrontend/.dockerignore
+           nginx.conf          -->  saanidhyamfrontend/nginx.conf
+
+    3. DO NOT overwrite these files (keep YOUR versions):
+         - saanidhyambackend/.env          (your database credentials)
+         - saanidhyambackend/requirements.txt (unless the Docker version has new deps)
+         - saanidhyamfrontend/package.json   (unless the Docker version has new deps)
+         - All source code files (your changes take priority)
+
+    4. If the Docker version also has CODE changes you want:
+         - Compare the files manually (use a diff tool like VS Code's
+           built-in compare, WinMerge, or Beyond Compare)
+         - Merge the code changes you want into your files
+
+    5. CHECK that your .env file exists and is correct:
+         saanidhyambackend/.env
+       If missing, copy from .env.example and fill in your credentials.
+
+    6. BUILD & RUN:
+         Open terminal in saanidhyam(30-04-26)/ and run:
+           docker compose up --build
+
+  --- SCENARIO C: You want ONLY the Docker version (discard your changes) ---
+
+    1. Simply replace your entire project folder with the Docker version
+    2. Recreate your .env file from .env.example
+    3. Run: docker compose up --build
+
+
+=====================================================================
+6. COMMON DOCKER COMMANDS (DAY-TO-DAY USAGE)
+=====================================================================
+
+  All commands should be run from the project ROOT:
+    cd "path\to\saanidhyam(30-04-26)"
+
+  START (with rebuild):
+    docker compose up --build
+
+  START (without rebuild, faster if no code changes):
+    docker compose up
+
+  START in background:
+    docker compose up -d
+
+  STOP:
+    docker compose down
+
+  STOP and remove volumes (WARNING: deletes uploaded media files):
+    docker compose down -v
+
+  REBUILD only one service:
+    docker compose build backend
+    docker compose build frontend
+
+  VIEW logs:
+    docker compose logs -f
+    docker compose logs -f backend
+    docker compose logs -f frontend
+
+  RESTART a single service:
+    docker compose restart backend
+    docker compose restart frontend
+
+  RUN a Django management command inside the container:
+    docker compose exec backend python manage.py createsuperuser
+    docker compose exec backend python manage.py makemigrations
+    docker compose exec backend python manage.py migrate
+    docker compose exec backend python manage.py shell
+
+  OPEN a shell inside a container:
+    docker compose exec backend sh
+    docker compose exec frontend sh
+
+  CHECK running containers:
+    docker compose ps
+
+  CHECK container resource usage:
+    docker stats
+
+
+=====================================================================
+7. TROUBLESHOOTING
+=====================================================================
+
+  PROBLEM: "docker: command not found" or "docker compose: command not found"
+  FIX:     Install Docker Desktop and make sure it is running.
+           On Windows, restart your terminal after installing.
+
+  PROBLEM: "Error response from daemon: Ports are not available: 8000"
+  FIX:     Something else is using port 8000 (maybe your local Django dev server).
+           Stop it first, or change the port in docker-compose.yml:
+             ports:
+               - "9000:8000"   # Access backend at localhost:9000 instead
+
+  PROBLEM: "ERROR: could not connect to server: Connection refused"
+           (Database connection errors)
+  FIX:     The backend connects to NeonDB (cloud database) over the internet.
+           - Make sure you have internet connectivity
+           - Check saanidhyambackend/.env has the correct PGHOST, PGUSER, PGPASSWORD
+           - NeonDB free tier may suspend after inactivity - go to your Neon
+             dashboard and check if the database is active
+
+  PROBLEM: Frontend shows blank page or API errors
+  FIX:     The frontend was built with VITE_API_URL=http://localhost:8000.
+           - Make sure the backend container is running (docker compose ps)
+           - Check the backend logs: docker compose logs backend
+           - If you changed the backend port, rebuild the frontend:
+               docker compose up --build frontend
+
+  PROBLEM: "Module not found" or "No module named ..." in backend
+  FIX:     A Python package might be missing from requirements.txt.
+           - Add it to saanidhyambackend/requirements.txt
+           - Rebuild: docker compose build backend
+
+  PROBLEM: Changes to code are not reflected
+  FIX:     Docker uses cached layers. Force a rebuild:
+             docker compose up --build
+           Or for a completely clean rebuild:
+             docker compose build --no-cache
+             docker compose up
+
+  PROBLEM: "permission denied" errors
+  FIX:     On Linux, you may need to run docker commands with sudo,
+           or add your user to the docker group:
+             sudo usermod -aG docker $USER
+             (then log out and back in)
+
+  PROBLEM: Docker build is very slow
+  FIX:     This is normal for the first build (downloads base images + deps).
+           Subsequent builds use cached layers and are much faster.
+           Make sure .dockerignore is present to avoid sending
+           unnecessary files (like node_modules or venv) to Docker.
+
+
+=====================================================================
+8. SWITCHING BETWEEN DOCKER AND LOCAL DEVELOPMENT
+=====================================================================
+
+  You can freely switch between Docker and local development:
+
+  --- TO USE DOCKER ---
+    1. Stop any local dev servers (Django runserver, Vite dev server)
+    2. Run: docker compose up --build
+    3. Access at: http://localhost:3000 (frontend), http://localhost:8000 (backend)
+
+  --- TO USE LOCAL DEVELOPMENT (without Docker) ---
+    1. Stop Docker: docker compose down
+    2. Start backend:
+         cd saanidhyambackend
+         venv\Scripts\activate       (Windows)
+         source venv/bin/activate    (Mac/Linux)
+         python manage.py runserver
+    3. Start frontend:
+         cd saanidhyamfrontend
+         npm run dev
+    4. Access at: http://localhost:5173 (frontend), http://localhost:8000 (backend)
+
+  IMPORTANT: Make sure the ports don't conflict. Don't run both
+  Docker containers AND local dev servers at the same time on the
+  same ports.
+
+  Your .env files, source code, and database are shared between both
+  approaches. There's no data loss when switching.
+
+
+=====================================================================
+  END OF GUIDE
+=====================================================================

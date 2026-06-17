@@ -1,0 +1,55 @@
+# ========================
+# Python & Django
+# ========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
+*.pot
+*.pyc
+
+# Django specific
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+satoru_backend/settings/local.py
+
+# Virtual Environments
+
+venv/
+.venv/
+
+notes.txt
+
+media/
+!media/layout.pdf
+
+# ========================
+# Environment Variables 
+# ========================
+
+.env
+
+
+
+# ========================
+# OS & IDE Settings
+# ========================
+# Mac
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# VS Code / PyCharm settings
+.vscode/
+.idea/
+
+# ========================
+# Testing & Celery
+# ========================
+.coverage
+htmlcov/
+celerybeat-schedule
+celerybeat.pid

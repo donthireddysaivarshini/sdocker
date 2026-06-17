@@ -1,0 +1,404 @@
+@import 'leaflet/dist/leaflet.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* --- TEAMMATE'S ORIGINAL VARIABLES --- */
+  --primary: #5D6F47;    /* Satoru Olive Green */
+  --secondary: #EDC750;  /* Satoru Mustard Gold */
+  --light-bg: #f8f9fa;
+  --card-bg: #ffffff;
+  --border-color: #e0e0e0;
+  --text-primary: #2c3e50;
+  --text-secondary: #6c757d;
+  
+  --shadow-s: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-m: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-l: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  /* --- YOUR BRIDGE VARIABLES (Mapping yours to theirs) --- */
+  --satoru-green: var(--primary);
+  --satoru-gold: var(--secondary);
+  --satoru-light: var(--light-bg);
+  --satoru-text: var(--text-primary);
+}
+
+/* --- YOUR UTILITY CLASSES --- */
+.bg-satoru-green { background-color: var(--primary) !important; }
+.text-satoru-green { color: var(--primary) !important; }
+.border-satoru-green { border-color: var(--primary) !important; }
+
+.bg-satoru-gold { background-color: var(--secondary) !important; }
+.text-satoru-gold { color: var(--secondary) !important; }
+
+.bg-satoru-light { background-color: var(--light-bg) !important; }
+
+body {
+  background-color: var(--light-bg);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Buttons */
+.btn-primary {
+  display: inline-block;
+  padding: 1rem 2.5rem;
+  background-color: var(--secondary);
+  color: var(--text-primary);
+  font-weight: 600;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-s);
+}
+
+.btn-primary:hover {
+  box-shadow: var(--shadow-m);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  display: inline-block;
+  padding: 1rem 2.5rem;
+  background-color: transparent;
+  color: white;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  border: 2px solid white;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background-color: white;
+  color: var(--primary);
+}
+
+/* Stat Cards */
+.stat-card {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 1rem;
+  text-align: center;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-s);
+}
+
+.stat-card:hover {
+  box-shadow: var(--shadow-m);
+  transform: translateY(-4px);
+}
+
+/* Feature Cards */
+.feature-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-s);
+  border-left: 4px solid var(--primary);
+}
+
+.feature-card:hover {
+  box-shadow: var(--shadow-m);
+  transform: translateY(-4px);
+}
+
+.feature-icon {
+  width: 3rem;
+  height: 3rem;
+  background-color: rgba(93, 111, 71, 0.1);
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  color: var(--primary);
+}
+
+/* Search Components */
+.search-input {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-m);
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  box-shadow: var(--shadow-l);
+}
+
+.search-button {
+  padding: 1rem 2rem;
+  background-color: var(--secondary);
+  color: #000;
+  font-weight: 700;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-s);
+  white-space: nowrap;
+}
+
+.search-button:hover:not(:disabled) {
+  box-shadow: var(--shadow-m);
+  transform: translateY(-2px);
+}
+
+.search-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Autocomplete */
+.autocomplete-dropdown {
+  position: absolute;
+  z-index: 20;
+  width: 100%;
+  margin-top: 0.5rem;
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-l);
+  max-height: 24rem;
+  overflow-y: auto;
+}
+
+.autocomplete-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.15s ease;
+}
+
+.autocomplete-item:last-child {
+  border-bottom: none;
+}
+
+.autocomplete-item:hover {
+  background-color: var(--light-bg);
+}
+
+.suggestion-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.suggestion-badge.facility {
+  background-color: var(--primary);
+  color: white;
+}
+
+.suggestion-badge.location {
+  background-color: var(--secondary);
+  color: #000;
+}
+
+.suggestion-badge.pincode {
+  background-color: #3b82f6;
+  color: white;
+}
+
+/* Filters */
+.filter-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.filter-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  color: var(--text-primary);
+}
+
+.filter-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(93, 111, 71, 0.1);
+}
+
+.filter-clear {
+  padding: 0.5rem 1rem;
+  background-color: var(--light-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 1.5rem;
+}
+
+.filter-clear:hover {
+  background-color: var(--border-color);
+}
+
+/* Home Cards */
+.home-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-s);
+}
+
+.home-card:hover {
+  box-shadow: var(--shadow-m);
+  transform: translateY(-4px);
+}
+
+.btn-view-details {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: var(--primary);
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-view-details:hover {
+  background-color: #4a5838;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-s);
+}
+
+/* Leaflet z-index fixes */
+.leaflet-container {
+  z-index: 1 !important;
+}
+
+.leaflet-pane {
+  z-index: auto !important;
+}
+
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 1000 !important;
+}
+
+.leaflet-control {
+  z-index: 1000 !important;
+}
+
+.leaflet-popup-pane {
+  z-index: 700 !important;
+}
+
+.leaflet-marker-pane {
+  z-index: 600 !important;
+}
+
+/* Filter Toggle Button */
+.filter-toggle {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  background-color: var(--light-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-toggle:hover {
+  background-color: var(--border-color);
+}
+
+/* Filters Container */
+.filters-container {
+  padding: 1.5rem;
+  background-color: var(--light-bg);
+  border-radius: 0.75rem;
+  margin-top: 1rem;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Range Slider */
+.range-slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border-color);
+  outline: none;
+  margin-top: 0.75rem;
+  -webkit-appearance: none;
+}
+
+.range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.range-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 4px rgba(93, 111, 71, 0.2);
+}
+
+.range-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--primary);
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.range-slider::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 4px rgba(93, 111, 71, 0.2);
+}
+input,
+select,
+textarea {
+  border: 1px solid #000 !important;
+  border-radius: 0.5rem;
+}
+.stat-card {
+  border: 2px solid #5D6F47;
+  border-radius: 12px;
+  padding: 2rem;
+}

@@ -1,0 +1,52 @@
+# ============================================================
+# Saanidhyam - Docker Compose
+# Orchestrates backend (Django) + frontend (Nginx) containers
+# ============================================================
+
+services:
+
+  # --- Django Backend (API) ---
+  backend:
+    build:
+      context: ./saanidhyambackend
+      dockerfile: Dockerfile
+    container_name: saanidhyam-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./saanidhyambackend/.env
+    environment:
+      - DJANGO_ENV=development
+      - ALLOWED_HOSTS=localhost,127.0.0.1,backend,*
+      - CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173,http://localhost:80,http://localhost
+    volumes:
+      # Persist uploaded media files outside the container
+      - backend_media:/app/media
+    networks:
+      - saanidhyam-network
+
+  # --- React Frontend (Nginx) ---
+  frontend:
+    build:
+      context: ./saanidhyamfrontend
+      dockerfile: Dockerfile
+      args:
+        # This tells the React build what URL the API lives at.
+        # Since backend runs on port 8000 on the HOST, we use localhost:8000.
+        VITE_API_URL: http://localhost:8000
+    container_name: saanidhyam-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - saanidhyam-network
+
+volumes:
+  backend_media:
+
+networks:
+  saanidhyam-network:
+    driver: bridge
