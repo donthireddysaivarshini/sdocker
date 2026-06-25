@@ -1,11 +1,11 @@
 # ============================================================
-# Saanidhyam - Docker Compose
+# Saanidhyam - Docker Compose (Cron version — no Celery/Redis)
 # Orchestrates backend (Django) + frontend (Nginx) containers
 # ============================================================
 
 services:
 
-  # --- Django Backend (API) ---
+  # --- Django Backend (API + Management Commands) ---
   backend:
     build:
       context: ./saanidhyambackend
@@ -21,7 +21,6 @@ services:
       - ALLOWED_HOSTS=localhost,127.0.0.1,backend,*
       - CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173,http://localhost:80,http://localhost
     volumes:
-      # Persist uploaded media files outside the container
       - backend_media:/app/media
     networks:
       - saanidhyam-network
@@ -32,8 +31,6 @@ services:
       context: ./saanidhyamfrontend
       dockerfile: Dockerfile
       args:
-        # This tells the React build what URL the API lives at.
-        # Since backend runs on port 8000 on the HOST, we use localhost:8000.
         VITE_API_URL: http://localhost:8000
     container_name: saanidhyam-frontend
     restart: unless-stopped
@@ -43,6 +40,8 @@ services:
       - backend
     networks:
       - saanidhyam-network
+
+# REMOVED: redis, celery_worker, celery_beat
 
 volumes:
   backend_media:

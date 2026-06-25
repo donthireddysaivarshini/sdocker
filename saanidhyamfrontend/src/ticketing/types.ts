@@ -63,6 +63,8 @@ export interface Ticket {
   phone: string;          // Maps to user_phone in DB
   email: string | null;   // Maps to user_email in DB
   age: number | null;     // Maps to user_age in DB
+  gender: string;
+  alternate_phone: string;
   
   // User Address (Sender)
   user_country: string;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Users, CheckCircle, Clock, AlertCircle, TrendingUp,  Calendar, Filter, RefreshCw } from 'lucide-react';
+import {  MapPin,ArrowRight, Users, CheckCircle, Clock, AlertCircle, TrendingUp,  Calendar, Filter, RefreshCw } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LineChart, Line, CartesianGrid, Legend } from 'recharts';
 import { djangoService } from '../services/djangoService';
 import { TicketStatus } from '../types';
@@ -294,14 +294,15 @@ export const Dashboard: React.FC = () => {
                     <table className="w-full text-left">
                         <thead>
                             <tr className="bg-slate-50 border-b border-slate-200">
-                                <th className="px-5 py-3 text-[11px] font-black text-black uppercase tracking-wider">ID</th>
-                                <th className="px-5 py-3 text-[11px] font-black text-black uppercase tracking-wider">Client Name</th>
-                                <th className="px-5 py-3 text-[11px] font-black text-black uppercase tracking-wider">Phone</th>
-                                <th className="px-5 py-3 text-[11px] font-black text-black uppercase tracking-wider">City</th>
-                                <th className="px-5 py-3 text-[11px] font-black text-black uppercase tracking-wider">Beneficiary</th>
-                                <th className="px-5 py-3 text-[11px] font-black text-black uppercase tracking-wider">Service</th>
-                                <th className="px-5 py-3 text-[11px] font-black text-black uppercase tracking-wider">Status</th>
-                                <th className="px-5 py-3 text-[11px] font-black text-black uppercase tracking-wider">Date</th>
+                                <th className="px-5 py-3.5 text-[11px] font-black text-black uppercase tracking-wider">ID</th>
+<th className="px-5 py-3.5 text-[11px] font-black text-black uppercase tracking-wider">Client</th>
+<th className="px-5 py-3.5 text-[11px] font-black text-black uppercase tracking-wider">Phone</th>
+<th className="px-5 py-3.5 text-[11px] font-black text-black uppercase tracking-wider">Location</th>
+<th className="px-5 py-3.5 text-[11px] font-black text-black uppercase tracking-wider">Beneficiary</th>
+<th className="px-5 py-3.5 text-[11px] font-black text-black uppercase tracking-wider">Status</th>
+<th className="w-36 px-5 py-3.5 text-[11px] font-black text-black uppercase tracking-wider text-right">
+    Date
+</th>
                                 
                             </tr>
                         </thead>
@@ -315,20 +316,60 @@ export const Dashboard: React.FC = () => {
                                     <td className="px-5 py-3.5">
                                         <span className="text-[13px] font-bold text-black">#{ticket.id}</span>
                                     </td>
-                                    <td className="px-5 py-3.5">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center text-[11px] font-black text-indigo-700 shrink-0">
-                                                {ticket.user_name?.charAt(0)?.toUpperCase() || '?'}
-                                            </div>
-                                            <span className="text-[14px] font-bold text-black">{ticket.user_name || '—'}</span>
-                                        </div>
-                                    </td>
-                                    <td className="px-5 py-3.5">
-                                        <span className="text-[13px] text-black font-semibold">{ticket.phone || '—'}</span>
-                                    </td>
-                                    <td className="px-5 py-3.5">
-                                        <span className="text-[13px] text-black font-semibold">{ticket.user_city || '—'}</span>
-                                    </td>
+                                    <td className="px-5 py-4">
+    <div className="flex items-center gap-2.5">
+        <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-[12px] font-black text-indigo-700 shrink-0">
+            {ticket.user_name?.charAt(0)?.toUpperCase() || '?'}
+        </div>
+
+        <div>
+            <p className="text-[14px] font-bold text-slate-900 leading-tight">
+                {ticket.user_name || '—'}
+            </p>
+
+            <p className="text-sm text-black">
+                {ticket.email || ''}
+            </p>
+        </div>
+    </div>
+</td>
+<td className="px-5 py-4">
+    <span className="text-[14px] font-semibold text-black">
+        {ticket.phone || '—'}
+    </span>
+</td>
+                                    <td className="px-5 py-4">
+    <div className="flex items-center gap-1.5">
+
+        <MapPin className="w-3.5 h-3.5 text-black shrink-0" />
+
+        {ticket.user_country && ticket.user_country !== 'India' ? (
+            <div>
+                <p className="text-[13px] font-bold text-slate-800">
+                    {ticket.user_country}
+                </p>
+
+                {ticket.user_area && (
+                    <p className="text-sm text-black truncate max-w-[140px]">
+                        {ticket.user_area}
+                    </p>
+                )}
+            </div>
+        ) : (
+            <div>
+                <p className="text-[13px] font-bold text-slate-800">
+                    {ticket.user_city || '—'}
+                </p>
+
+                {ticket.user_state && (
+                    <p className="text-sm text-black">
+                        {ticket.user_state}
+                    </p>
+                )}
+            </div>
+        )}
+    </div>
+</td>
                                     <td className="px-5 py-3.5">
                                         <span className={`text-[11px] font-black px-2.5 py-1 rounded-full border uppercase tracking-wide ${
                                             ticket.beneficiary === 'myself' ? 'bg-teal-100 text-teal-800 border-teal-200' :
@@ -339,21 +380,35 @@ export const Dashboard: React.FC = () => {
                                             {ticket.beneficiary || '—'}
                                         </span>
                                     </td>
+                                    
                                     <td className="px-5 py-3.5">
-                                        <span className="text-[13px] text-black font-semibold truncate max-w-[120px] block">
-                                            {ticket.service_types?.[0] || '—'}
-                                        </span>
+                                        <span
+    className={`text-[11px] font-black px-2.5 py-1 rounded-full border uppercase whitespace-nowrap ${
+        STATUS_COLORS[ticket.status] ||
+        'bg-slate-100 text-black border-slate-200'
+    }`}
+>
+    {TicketStatusLabel[ticket.status as TicketStatus]} -{' '}
+    {ticket.status?.replace(/_/g, ' ') || '—'}
+</span>
                                     </td>
-                                    <td className="px-5 py-3.5">
-                                        <span className={`text-[11px] font-black px-2.5 py-1 rounded-full uppercase ${STATUS_COLORS[ticket.status] || 'bg-slate-100 text-black'}`}>
-                                           {TicketStatusLabel[ticket.status as TicketStatus]} - {ticket.status?.replace(/_/g, ' ')}
-                                        </span>
-                                    </td>
-                                    <td className="px-5 py-3.5">
-                                        <span className="text-[13px] font-semibold text-black">
-                                            {ticket.created_at ? new Date(ticket.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '—'}
-                                        </span>
-                                    </td>
+                                    <td className="w-36 px-5 py-4 text-right whitespace-nowrap">
+    <div className="leading-tight">
+        <p className="text-[13px] font-bold text-slate-800">
+            {new Date(ticket.created_at).toLocaleDateString('en-IN', {
+                day: 'numeric',
+                month: 'short',
+            })}
+        </p>
+
+        <p className="text-[11px] text-black">
+            {new Date(ticket.created_at).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+            })}
+        </p>
+    </div>
+</td>
                                     
                                 </tr>
                             ))}

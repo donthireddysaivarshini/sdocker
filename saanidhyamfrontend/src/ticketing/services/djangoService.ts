@@ -164,6 +164,8 @@ const mapTicketFromDB = (t: any): Ticket => ({
     phone: t.phone || '',
     email: t.email || '',
     age: t.age ?? null,
+    gender: t.gender || '',
+    alternate_phone: t.alternate_phone || '',
 
     // ── Requester Address
     user_country: t.user_country || 'India',

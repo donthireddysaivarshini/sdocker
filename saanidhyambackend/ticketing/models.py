@@ -19,7 +19,8 @@ class Ticket(models.Model):
     phone = models.CharField(max_length=50, db_column='user_phone')       # Correct Mapping
     email = models.EmailField(blank=True, null=True, db_column='user_email') # Correct Mapping
     age = models.IntegerField(null=True, blank=True, db_column='user_age')   # Correct Mapping
-    
+    gender = models.CharField(max_length=20, blank=True, null=True)
+    alternate_phone = models.CharField(max_length=50, blank=True, null=True) 
     # User Address (Sender)
     user_country = models.CharField(max_length=100, default='India')
     user_country_other = models.CharField(max_length=100, null=True, blank=True)

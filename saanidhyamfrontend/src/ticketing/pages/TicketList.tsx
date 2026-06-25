@@ -84,8 +84,10 @@ export const TicketList: React.FC = () => {
                 <div>
                     <h1 className="text-3xl font-black tracking-tight text-slate-900">All Tickets</h1>
                     <p className="text-[14px] font-semibold text-black mt-0.5">
-                        {totalCount > 0 ? `${totalCount} total records` : 'Manage and track service requests'}
-                    </p>
+    {totalCount > 0
+        ? `${totalCount} Total Tickets • ${PAGE_SIZE} per page`
+        : `Showing ${PAGE_SIZE} tickets per page`}
+</p>
                 </div>
                 <button onClick={() => fetchData(currentPage)} className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-bold text-black hover:bg-slate-50 transition-all shadow-sm shrink-0">
                     <RefreshCw size={14} /> Refresh
@@ -173,7 +175,7 @@ export const TicketList: React.FC = () => {
                 <table className="w-full text-left">
                     <thead>
                         <tr className="bg-slate-50 border-b border-slate-200">
-                            <th className="px-5 py-3.5 text-[11px] font-black text-black uppercase tracking-wider">S.No</th>
+
                             <th className="px-5 py-3.5 text-[11px] font-black text-black uppercase tracking-wider">ID</th>
                             <th className="px-5 py-3.5 text-[11px] font-black text-black uppercase tracking-wider">Client</th>
                             <th className="px-5 py-3.5 text-[11px] font-black text-black uppercase tracking-wider">Phone</th>
@@ -181,13 +183,15 @@ export const TicketList: React.FC = () => {
                             <th className="px-5 py-3.5 text-[11px] font-black text-black uppercase tracking-wider">Beneficiary</th>
                             <th className="px-5 py-3.5 text-[11px] font-black text-black uppercase tracking-wider">Status</th>
                             
-                            <th className="px-5 py-3.5 text-[11px] font-black text-black uppercase tracking-wider text-right">Date</th>
+                            <th className="w-36 px-5 py-3.5 text-[11px] font-black text-black uppercase tracking-wider text-right">
+    Date
+</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                         {loading ? (
                             <tr>
-                                <td colSpan={9} className="px-6 py-20 text-center">
+                                <td colSpan={8} className="px-6 py-20 text-center">
                                     <div className="flex flex-col items-center gap-3">
                                         <div className="w-8 h-8 border-[3px] border-slate-200 border-t-indigo-500 rounded-full animate-spin" />
                                         <span className="text-[14px] text-black font-semibold">Loading tickets...</span>
@@ -196,7 +200,7 @@ export const TicketList: React.FC = () => {
                             </tr>
                         ) : tickets.length === 0 ? (
                             <tr>
-                                <td colSpan={9} className="px-6 py-16 text-center text-black text-[14px] font-semibold">
+                                <td colSpan={8} className="px-6 py-16 text-center text-black text-[14px] font-semibold">
                                     No tickets match your filters.
                                 </td>
                             </tr>
@@ -207,11 +211,7 @@ export const TicketList: React.FC = () => {
                                     onClick={() => navigate(`/tickets/${ticket.id}`)}
                                     className="hover:bg-indigo-50/40 transition-all cursor-pointer group"
                                 >
-                                    <td className="px-5 py-4">
-                                        <span className="text-[13px] font-semibold text-black">
-                                            {(currentPage - 1) * PAGE_SIZE + index + 1}
-                                        </span>
-                                    </td>
+                                    
 
                                     <td className="px-5 py-4">
                                         <span className="text-[13px] font-black text-black">#{ticket.id}</span>
@@ -236,10 +236,19 @@ export const TicketList: React.FC = () => {
                                     <td className="px-5 py-4">
                                         <div className="flex items-center gap-1.5">
                                             <MapPin className="w-3.5 h-3.5 text-black shrink-0" />
-                                            <div>
-                                                <p className="text-[13px] font-bold text-slate-800">{ticket.user_city || '—'}</p>
-                                                {ticket.user_state && <p className="text-sm text-black">{ticket.user_state}</p>}
-                                            </div>
+                                            {ticket.user_country && ticket.user_country !== 'India' ? (
+                                                <div>
+                                                    <p className="text-[13px] font-bold text-slate-800">{ticket.user_country}</p>
+                                                    {ticket.user_area && (
+                                                        <p className="text-sm text-black truncate max-w-[140px]">{ticket.user_area}</p>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <div>
+                                                    <p className="text-[13px] font-bold text-slate-800">{ticket.user_city || '—'}</p>
+                                                    {ticket.user_state && <p className="text-sm text-black">{ticket.user_state}</p>}
+                                                </div>
+                                            )}
                                         </div>
                                     </td>
 
@@ -257,7 +266,7 @@ export const TicketList: React.FC = () => {
 
                                     
 
-                                    <td className="px-5 py-4 text-right">
+                                    <td className="w-36 px-5 py-4 text-right whitespace-nowrap">
                                         <div className="leading-tight">
   <p className="text-[13px] font-bold text-slate-800">
     {new Date(ticket.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
@@ -277,9 +286,26 @@ export const TicketList: React.FC = () => {
             {/* Pagination */}
             {totalPages > 1 && (
                 <div className="flex items-center justify-between py-2">
-                    <p className="text-[13px] font-semibold text-black">
-                        Showing <span className="text-slate-900 font-black">{(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, totalCount)}</span> of <span className="text-slate-900 font-black">{totalCount}</span>
-                    </p>
+                   <p className="text-[13px] font-semibold text-black">
+    Total Tickets:
+    <span className="text-slate-900 font-black ml-1">
+        {totalCount}
+    </span>
+
+    <span className="mx-2 text-slate-400">•</span>
+
+    Showing
+
+    <span className="text-slate-900 font-black mx-1">
+        {(currentPage - 1) * PAGE_SIZE + 1}
+    </span>
+
+    -
+
+    <span className="text-slate-900 font-black mx-1">
+        {Math.min(currentPage * PAGE_SIZE, totalCount)}
+    </span>
+</p>
 
                     <div className="flex items-center gap-1.5">
                         <button
